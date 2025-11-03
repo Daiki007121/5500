@@ -1,9 +1,9 @@
-import express from 'express';
+import express from "express";
 import {
-    getAllItems,
-    createClothingItem,
-    deleteClothingItem,
-    updateClothingItem
+  getAllItems,
+  createClothingItem,
+  deleteClothingItem,
+  updateClothingItem,
 } from "../controller/wardrobeController.js";
 
 const router = express.Router();
