@@ -79,6 +79,51 @@ export const createUserInfo = async (req, res) => {
   }
 };
 
+// POST request: Login user with email and password
+export const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ message: "Email and password are required" });
+    }
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ message: "Email is not valid" });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    // Return user data without password
+    const userResponse = {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      createdAt: user.createdAt,
+    };
+
+    return res.status(200).json({
+      message: "Login successful",
+      user: userResponse,
+    });
+  } catch (err) {
+    console.error(`Login failed!! Error: ${err}`);
+    return res.status(500).json({ message: "Login failed. Try again" });
+  }
+};
+
 // DELETE request: Deletes a user based on ID provided
 export const deleteUser = async (req, res) => {
   try {
