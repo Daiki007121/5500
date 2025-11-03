@@ -1,7 +1,4 @@
 import dotenv from "dotenv";
-dotenv.config();
-
-import mongoose from "mongoose";
 import express from "express";
 import cors from "cors";
 import connectToDB from "./config/mongoDBConnection.js";
@@ -10,6 +7,7 @@ import wardrobeRoutes from "./routes/wardrobeRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import outfitRoutes from "./routes/outfitRoutes.js";
 
+dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));

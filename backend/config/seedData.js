@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import User from "../models/userSchema.js";
 import Wardrobeitem from "../models/clothingSchema.js";
 
@@ -27,7 +26,7 @@ const seedData = async () => {
           item_url: "madeuplink.com",
         });
         
-        console.log(`Created clothing item 1 for ${user.name}`);
+        console.log(`Created clothing item 1 (${clothingItem1.name}) for ${user.name}`);
         
         const clothingItem2 = await Wardrobeitem.create({
             userId: user._id,
@@ -42,7 +41,7 @@ const seedData = async () => {
             item_url: "madeuplink.com",
         });
         
-        console.log(`Created clothing item 2 for ${user.name}`);
+        console.log(`Created clothing item 2 (${clothingItem2.name}) for ${user.name}`);
         console.log("Seeding complete!");
     } else {
       console.log(`Using existing user: ${user.name}`);

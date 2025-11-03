@@ -8,6 +8,10 @@ export const getAllItems = async (req, res) => {
     try {
         const { userId, category } = req.query;
         console.log('Query params:', { userId, category });
+
+        if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: "Require valid userID"});
+        }
         
         let query = {};
         if (userId) query.userId = userId;
@@ -17,7 +21,7 @@ export const getAllItems = async (req, res) => {
         console.log('Found items:', items.length);
         console.log('Items:', items);
         
-        res.json({ data: items });
+        res.status(201).json({ data: items });
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ success: false, error: error.message });
@@ -28,41 +32,62 @@ export const getAllItems = async (req, res) => {
 export const createClothingItem = async (req,res) => {
     console.log('POST /api/wardrobe called with:', req.body);
     try {
-        if (req.body.userId && !mongoose.Types.ObjectId.isValid(req.body.userId)) {
-            req.body.userId = new mongoose.Types.ObjectId();
+        const { 
+            userId, 
+            category, 
+            name, 
+            price,
+            brand,
+            description,
+            image_data
+        } = req.body
+
+        if (userId && !mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: "User id not valid. Try again"});
         }
 
         // Calling on gemini service
-        if (req.body.image_data) {
-            const description = await analyzeClothingImage(req.body.image_data);
-            req.body.description = description;
+        if (image_data) {
+            const description = await analyzeClothingImage(image_data);
         }
 
-        const newItem = await Wardrobeitem.create(req.body);
+        const newItem = await Wardrobeitem.create({
+            userId,
+            category,
+            name,
+            price,
+            brand,
+            description,
+            image_data
+        });
         console.log('Created item:', newItem._id);
-        res.status(201).json({ success: true, data: newItem });
-    } catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ success: false, error: error.message });
+        res.status(201).json({ data: newItem });
+    } catch (err) {
+        console.error('Error:', err);
+        res.status(500).json({ message: `POST REQUEST wardrobeItem FAILED!! \n ${err}` });
     }
 };
 
 // DELETE request: Deletes an item in wardrobe based on ID
 export const deleteClothingItem = async (req,res) => {
     try {
-        await Wardrobeitem.findByIdAndDelete(req.params.id);
+        const deletedClothingItem = await Wardrobeitem.findByIdAndDelete(req.params.id);
+        if (!deletedClothingItem) {
+            return res.status(400).json({ message: "Clothing item is not found given the Id"});
+        }
         res.json({ success: true });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }
 };
 
+// PUT request: Updates field(s) of the clothing item object
 export const updateClothingItem = async (req,res) => {
     try {
         const { id } = req.params;
         const updates = req.body;
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ message: "You have provided an invalid clothing ID (Not real or not mongoose object ID. Try again"});
+            return res.status(400).json({ message: "You have provided an invalid clothing ID. Try again"});
         }
 
         const updatedItem = await Wardrobeitem.findByIdAndUpdate(

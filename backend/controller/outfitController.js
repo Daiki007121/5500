@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import Outfit from "../models/outfitSchema.js";
 
 // GET Obtain all outfits by the userID
