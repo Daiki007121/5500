@@ -20,8 +20,10 @@ class AuthenticationController: ObservableObject {
 
     private let userDefaultsKey = "currentUser"
     @Published var currentUser: User?
+    private let urlSession: URLSession
 
-    init() {
+    init(urlSession: URLSession = .shared) {
+        self.urlSession = urlSession
         loadUserFromStorage()
     }
 
@@ -40,7 +42,7 @@ class AuthenticationController: ObservableObject {
         let body: [String: String] = ["email": email, "password": password]
         request.httpBody = try? JSONEncoder().encode(body)
 
-        URLSession.shared.dataTask(with: request) { data, response, error in
+        urlSession.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
                 if let error = error {
                     completion(false, error.localizedDescription)
@@ -87,7 +89,7 @@ class AuthenticationController: ObservableObject {
         let body: [String: String] = ["name": name, "email": email, "password": password]
         request.httpBody = try? JSONEncoder().encode(body)
 
-        URLSession.shared.dataTask(with: request) { data, response, error in
+        urlSession.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
                 if let error = error {
                     completion(false, error.localizedDescription)
