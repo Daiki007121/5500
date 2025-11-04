@@ -5,13 +5,13 @@ import SwiftUI
 class WardrobeController: ObservableObject {
     @Published var model = WardrobeModel()
     @Published var selectedCategory = "all"
-    @Published var selectedOutfit = 1 {  // 1, 2, or 3
+    @Published var selectedOutfit = 1 {
         didSet {
             saveOutfits()
         }
     }
     @Published var showAddSheet = false
-    @Published var outfits: [Int: [String: String]] = [1: [:], 2: [:], 3: [:]]  // outfitNumber -> (category -> itemId)
+    @Published var outfits: [Int: [String: String]] = [1: [:], 2: [:], 3: [:]]
 
     var currentEquippedOutfit: [String: String] {
         outfits[selectedOutfit] ?? [:]
@@ -25,9 +25,17 @@ class WardrobeController: ObservableObject {
     @Published var formImageData: Data?
     @Published var formIsLoading = false
     @Published var formErrorMessage: String?
+    
+    // NEW FIELDS
+    @Published var formColor = ""
+    @Published var formSize = "M"
+    @Published var formPrice = ""
+    @Published var formMaterial = ""
+    @Published var formItemUrl = ""
 
     let categories = ["all", "tops", "bottoms", "shoes", "outerwear", "accessories"]
     let formCategories = ["tops", "bottoms", "shoes", "outerwear", "accessories"]
+    let sizeOptions = ["XS", "S", "M", "L", "XL", "XXL", "Custom"]
 
     var filteredItems: [WardrobeItem] {
         if selectedCategory == "all" {
@@ -40,9 +48,7 @@ class WardrobeController: ObservableObject {
         Task {
             do {
                 try await model.fetchItems()
-                // Try to load saved outfits first
                 if !loadOutfits() {
-                    // If no saved data, initialize with empty outfits
                     DispatchQueue.main.async {
                         self.outfits = [1: [:], 2: [:], 3: [:]]
                     }
@@ -79,10 +85,30 @@ class WardrobeController: ObservableObject {
     }
 
     func submitAddItem() {
+        guard !formName.isEmpty else {
+            formErrorMessage = "Name is required"
+            return
+        }
+        
+        guard !formColor.isEmpty else {
+            formErrorMessage = "Color is required"
+            return
+        }
+        
         formIsLoading = true
         Task {
             do {
-                try await model.addItem(name: formName, category: formCategory, brand: formBrand, imageData: formImageData)
+                try await model.addItem(
+                    name: formName,
+                    category: formCategory,
+                    brand: formBrand,
+                    color: formColor,
+                    size: formSize,
+                    price: formPrice,
+                    material: formMaterial,
+                    itemUrl: formItemUrl,
+                    imageData: formImageData
+                )
                 await MainActor.run {
                     self.resetForm()
                     self.showAddSheet = false
@@ -101,6 +127,11 @@ class WardrobeController: ObservableObject {
         formName = ""
         formCategory = "tops"
         formBrand = ""
+        formColor = ""
+        formSize = "M"
+        formPrice = ""
+        formMaterial = ""
+        formItemUrl = ""
         formSelectedImage = nil
         formImageData = nil
         formIsLoading = false

@@ -20,22 +20,25 @@ const clothingItem = new Schema({
         required: true,
         trim: true
     },
-    price: {
-        type: Number,
-        default: 0,
-    },
     color: {
         type: String,
+        required: true,
         lowercase: true,
         trim: true
     },
     size: {
         type: String,
-        lowercase: true,
+        required: true,
+        set: v => v.toUpperCase(),
         trim: true,
     },
-    material: String,
+    price: {
+        type: Number,
+        min: 0,
+        default: 0,
+    },
     brand: String,
+    material: String,
     description: String,
     image_url: String,
     image_data: String,
@@ -45,5 +48,8 @@ const clothingItem = new Schema({
         default: () => Date.now(),
     }
 });
+
+clothingItem.index({ userId: 1, category: 1 });
+clothingItem.index({ userId: 1, createdAt: -1 });
 
 export default mongoose.model("Wardrobeitem", clothingItem);
