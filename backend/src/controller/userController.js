@@ -60,7 +60,18 @@ export const createUserInfo = async (req, res) => {
             password: hashPassword
         });
         if (newUser) {
-            return res.status(201).json({ message: "User successfully created!"});
+            // Return user data without password
+            const userResponse = {
+                id: newUser._id,
+                name: newUser.name,
+                email: newUser.email,
+                createdAt: newUser.createdAt,
+            };
+
+            return res.status(201).json({
+                message: "User successfully created!",
+                user: userResponse
+            });
         } else {
             return res.status(400).json({ message: "Error creating new user"});
         }
@@ -68,6 +79,49 @@ export const createUserInfo = async (req, res) => {
     } catch (err) {
         console.error(`POST Request failed!! Error msg: ${err}`);
         return res.status(500).json({ message: "POST request failed. Try again"});
+    }
+};
+
+// POST request: Login user with email and password
+export const loginUser = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({ message: "Email and password are required" });
+        }
+
+        if (!isValidEmail(email)) {
+            return res.status(400).json({ message: "Email is not valid" });
+        }
+
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(401).json({ message: "Invalid email or password" });
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: "Invalid email or password" });
+        }
+
+        // Return user data without password
+        const userResponse = {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            createdAt: user.createdAt,
+        };
+
+        return res.status(200).json({
+            message: "Login successful",
+            user: userResponse,
+        });
+    } catch (err) {
+        console.error(`Login failed!! Error: ${err}`);
+        return res.status(500).json({ message: "Login failed. Try again" });
     }
 };
 
