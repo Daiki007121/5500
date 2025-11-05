@@ -60,7 +60,18 @@ export const createUserInfo = async (req, res) => {
             password: hashPassword
         });
         if (newUser) {
-            return res.status(201).json({ message: "User successfully created!"});
+            // Return user data without password
+            const userResponse = {
+                id: newUser._id,
+                name: newUser.name,
+                email: newUser.email,
+                createdAt: newUser.createdAt,
+            };
+
+            return res.status(201).json({
+                message: "User successfully created!",
+                user: userResponse
+            });
         } else {
             return res.status(400).json({ message: "Error creating new user"});
         }
