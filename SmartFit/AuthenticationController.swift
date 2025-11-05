@@ -103,8 +103,16 @@ class AuthenticationController: ObservableObject {
 
                 if let httpResponse = response as? HTTPURLResponse,
                    httpResponse.statusCode == 201 {
-                    // After successful registration, log in automatically
-                    self.login(email: email, password: password, completion: completion)
+                    // Parse the registration response which now includes user data
+                    if let json = try? JSONDecoder().decode(LoginResponse.self, from: data) {
+                        let user = User(email: json.user.email, name: json.user.name, idToken: json.user.id)
+                        self.currentUser = user
+                        self.saveUserToStorage(user)
+                        self.delegate?.didSignIn(user: user)
+                        completion(true, nil)
+                    } else {
+                        completion(false, "Failed to parse registration response")
+                    }
                 } else {
                     if let json = try? JSONDecoder().decode(ErrorResponse.self, from: data) {
                         completion(false, json.message)
