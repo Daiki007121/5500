@@ -43,6 +43,42 @@ struct AuthenticationControllerTests {
         MockURLProtocol.reset()
     }
 
+    @Test func loginPersistsUserIDToStorage() async throws {
+        // Given: Setup mock URL and response
+        let loginURL = URL(string: "https://smartfit-backend-lhz4.onrender.com/api/user/login")!
+        MockURLProtocol.mockLoginSuccess(url: loginURL)
+
+        let config = URLSessionConfiguration.ephemeral
+        config.protocolClasses = [MockURLProtocol.self]
+        let mockSession = URLSession(configuration: config)
+
+        UserDefaults.standard.removeObject(forKey: "currentUser")
+        UserDefaults.standard.synchronize()
+
+        let authController = AuthenticationController(urlSession: mockSession)
+        let expectation = Expectation()
+
+        // When: Login with valid credentials
+        authController.login(email: "mock@example.com", password: "password123") { success, error in
+            // Then: User ID should be persisted to storage
+            #expect(success == true)
+
+            let storedData = UserDefaults.standard.data(forKey: "currentUser")
+            #expect(storedData != nil)
+
+            if let storedUser = try? JSONDecoder().decode(User.self, from: storedData!) {
+                #expect(storedUser.idToken == "mock-user-id-123")
+                #expect(storedUser.email == "mock@example.com")
+                #expect(storedUser.name == "Mock User")
+            }
+
+            expectation.fulfill()
+        }
+
+        await expectation.fulfillment()
+        MockURLProtocol.reset()
+    }
+
     @Test func loginWithInvalidCredentialsFails() async throws {
         // Given: Setup mock URL and failure response
         let loginURL = URL(string: "https://smartfit-backend-lhz4.onrender.com/api/user/login")!
@@ -74,11 +110,9 @@ struct AuthenticationControllerTests {
     // MARK: - Register Tests
 
     @Test func registerCreatesNewUser() async throws {
-        // Given: Setup mock URLs for register and login
+        // Given: Setup mock URL for register
         let registerURL = URL(string: "https://smartfit-backend-lhz4.onrender.com/api/user/register")!
-        let loginURL = URL(string: "https://smartfit-backend-lhz4.onrender.com/api/user/login")!
         MockURLProtocol.mockRegisterSuccess(url: registerURL)
-        MockURLProtocol.mockLoginSuccess(url: loginURL)
 
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [MockURLProtocol.self]
@@ -92,10 +126,49 @@ struct AuthenticationControllerTests {
 
         // When: Register with valid details
         authController.register(name: "Mock User", email: "mock@example.com", password: "password123") { success, error in
-            // Then: Registration should succeed and auto-login
+            // Then: Registration should succeed and save user with ID
             #expect(success == true)
             #expect(error == nil)
             #expect(authController.currentUser != nil)
+            #expect(authController.currentUser?.email == "mock@example.com")
+            #expect(authController.currentUser?.name == "Mock User")
+            #expect(authController.currentUser?.idToken == "mock-registered-user-id-456")
+            expectation.fulfill()
+        }
+
+        await expectation.fulfillment()
+        MockURLProtocol.reset()
+    }
+
+    @Test func registerPersistsUserIDToStorage() async throws {
+        // Given: Setup mock URL for register
+        let registerURL = URL(string: "https://smartfit-backend-lhz4.onrender.com/api/user/register")!
+        MockURLProtocol.mockRegisterSuccess(url: registerURL)
+
+        let config = URLSessionConfiguration.ephemeral
+        config.protocolClasses = [MockURLProtocol.self]
+        let mockSession = URLSession(configuration: config)
+
+        UserDefaults.standard.removeObject(forKey: "currentUser")
+        UserDefaults.standard.synchronize()
+
+        let authController = AuthenticationController(urlSession: mockSession)
+        let expectation = Expectation()
+
+        // When: Register with valid details
+        authController.register(name: "Mock User", email: "mock@example.com", password: "password123") { success, error in
+            // Then: User ID should be persisted to storage
+            #expect(success == true)
+
+            let storedData = UserDefaults.standard.data(forKey: "currentUser")
+            #expect(storedData != nil)
+
+            if let storedUser = try? JSONDecoder().decode(User.self, from: storedData!) {
+                #expect(storedUser.idToken == "mock-registered-user-id-456")
+                #expect(storedUser.email == "mock@example.com")
+                #expect(storedUser.name == "Mock User")
+            }
+
             expectation.fulfill()
         }
 

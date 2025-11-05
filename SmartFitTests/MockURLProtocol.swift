@@ -90,7 +90,13 @@ class MockURLProtocol: URLProtocol {
     static func mockRegisterSuccess(url: URL) {
         let json = """
         {
-            "message": "User successfully created!"
+            "message": "User successfully created!",
+            "user": {
+                "id": "mock-registered-user-id-456",
+                "name": "Mock User",
+                "email": "mock@example.com",
+                "createdAt": "2025-01-01T00:00:00.000Z"
+            }
         }
         """
         let data = json.data(using: .utf8)
