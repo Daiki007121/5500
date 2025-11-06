@@ -26,8 +26,20 @@ class WardrobeModel: ObservableObject {
 
     private let baseURL = "https://smartfit-backend-lhz4.onrender.com/api/wardrobe"
 
+    private func getCurrentUserId() -> String? {
+        guard let data = UserDefaults.standard.data(forKey: "currentUser"),
+              let user = try? JSONDecoder().decode(User.self, from: data) else {
+            return nil
+        }
+        return user.idToken
+    }
+
     func fetchItems() async throws {
-        guard let url = URL(string: baseURL) else {
+        guard let userId = getCurrentUserId() else {
+            throw NSError(domain: "User not logged in", code: -1)
+        }
+
+        guard let url = URL(string: "\(baseURL)?userId=\(userId)") else {
             throw NSError(domain: "Invalid URL", code: -1)
         }
 
@@ -52,6 +64,10 @@ class WardrobeModel: ObservableObject {
         itemUrl: String,
         imageData: Data?
     ) async throws {
+        guard let userId = getCurrentUserId() else {
+            throw NSError(domain: "User not logged in", code: -1)
+        }
+
         guard let url = URL(string: baseURL) else {
             throw NSError(domain: "Invalid URL", code: -1)
         }
@@ -61,7 +77,7 @@ class WardrobeModel: ObservableObject {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
         var body: [String: Any] = [
-            "userId": "test-user",
+            "userId": userId,
             "name": name,
             "category": category,
             "brand": brand,
