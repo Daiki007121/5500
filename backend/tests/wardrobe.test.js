@@ -47,8 +47,9 @@ describe('Wardrobe API - Enhanced Item Form Tests', () => {
             expect(response.body.data.name).toBe('Test Nike Shirt');
             expect(response.body.data.color).toBe('blue');
             expect(response.body.data.size).toBe('M');
-            
             testItemId = response.body.data._id;
+            expect(testItemId).toBe(response.body.data._id)
+            
         });
 
         test('Should fail when color field is missing (required field)', async () => {
