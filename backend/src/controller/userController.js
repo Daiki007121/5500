@@ -67,7 +67,7 @@ export const createUserInfo = async (req, res) => {
                 email: newUser.email,
                 createdAt: newUser.createdAt,
             };
-
+            console.log("Successfully Created a user!!");
             return res.status(201).json({
                 message: "User successfully created!",
                 user: userResponse
