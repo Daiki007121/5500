@@ -63,5 +63,8 @@ fastlane/test_output
 backend/node_modules
 backend/.env
 backend/.env.test
+.env
+.env.test
+coverage
 .DS_Store
 backend/coverage
