@@ -62,5 +62,6 @@ fastlane/screenshots/**/*.png
 fastlane/test_output
 backend/node_modules
 backend/.env
+backend/.env.test
 .DS_Store
 backend/coverage
