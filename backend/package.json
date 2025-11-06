@@ -6,8 +6,7 @@
     "dev": "nodemon server.js",
     "lint": "eslint .",
     "start": "npm run lint && node server.js",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles",
-    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
+    "test": "jest",
     "format": "prettier --write ."
   },
   "type": "module",
@@ -35,9 +34,5 @@
     "nodemon": "^3.1.10",
     "prettier": "^3.6.2",
     "supertest": "^7.1.4"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "transform": {}
   }
 }
