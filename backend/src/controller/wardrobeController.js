@@ -4,10 +4,8 @@ import { analyzeClothingImage } from "../services/geminiService.js";
 
 // GET request: Get all items in wardrobe
 export const getAllItems = async (req, res) => {
-  console.log("GET /api/wardrobe called");
   try {
     const { userId, category } = req.query;
-    console.log("Query params:", { userId, category });
 
     if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({ message: "Require valid userID" });
@@ -18,19 +16,15 @@ export const getAllItems = async (req, res) => {
     if (category) query.category = category;
 
     const items = await Wardrobeitem.find(query).sort({ createdAt: -1 });
-    console.log("Found items:", items.length);
-    console.log("Items:", items);
 
     res.status(201).json({ data: items });
   } catch (error) {
-    console.error("Error:", error);
     res.status(500).json({ success: false, error: error.message });
   }
 };
 
 // POST request: Insert new clothing item in wardrobe
 export const createClothingItem = async (req, res) => {
-  console.log("POST /api/wardrobe called with:", req.body);
   try {
     let { userId, category, name, price, brand, description, image_data } =
       req.body;
@@ -39,10 +33,10 @@ export const createClothingItem = async (req, res) => {
       return res.status(400).json({ message: "User id not valid. Try again" });
     }
 
-    // Calling on gemini service
-    if (image_data) {
-      description = await analyzeClothingImage(image_data);
-    }
+    // // Calling on gemini service
+    // if (image_data) {
+    //   description = await analyzeClothingImage(image_data);
+    // }
 
     const newItem = await Wardrobeitem.create({
       userId,
@@ -53,7 +47,7 @@ export const createClothingItem = async (req, res) => {
       description,
       image_data,
     });
-    console.log("Created item:", newItem._id);
+    
     res.status(201).json({ data: newItem });
   } catch (err) {
     console.error("Error:", err);
