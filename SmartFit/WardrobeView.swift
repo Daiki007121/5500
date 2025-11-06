@@ -104,7 +104,7 @@ struct ItemCard: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack() {
             ZStack(alignment: .bottomTrailing) {
                 if let imageData = item.image_data,
                    let base64 = imageData.components(separatedBy: ",").last,
@@ -112,14 +112,15 @@ struct ItemCard: View {
                    let uiImage = UIImage(data: data) {
                     Image(uiImage: uiImage)
                         .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(height: 150)
+                        .aspectRatio(1, contentMode: .fill)
+                        .frame(maxWidth: .infinity, minHeight: 160, maxHeight: 160)
                         .clipped()
-                        .cornerRadius(8)
+                        .cornerRadius(10)
                 } else {
                     Rectangle()
                         .fill(Color.gray.opacity(0.2))
-                        .frame(height: 150)
+                        .frame(height: 160)
+                        .aspectRatio(1, contentMode: .fill)
                         .cornerRadius(8)
                         .overlay(
                             Image(systemName: "tshirt")
@@ -140,41 +141,80 @@ struct ItemCard: View {
                         .padding(8)
                 }
             }
+            ZStack(alignment: .bottomTrailing) {
+                VStack(alignment: .center) {
+                    HStack {
+                        Text(item.name)
+                            .font(.headline)
+                            .foregroundColor(.black)
+                            .fontWeight(.bold)
+                            .lineLimit(1)
+                    }
+                    
+                    HStack {
+                        if let brand = item.brand, !brand.isEmpty {
+                            Text("\(brand.uppercased()) •")
+                                .font(.caption2)
+                                .foregroundColor(.black)
+                        } else {
+                            Text("Brand: --- •")
+                                .font(.caption2)
+                                .foregroundColor(.black)
+                        }
+                        if let size = item.size, !size.isEmpty {
+                            Text("Size: \(size.uppercased())")
+                                .font(.caption2)
+                                .foregroundColor(.black)
+                        } else {
+                            Text("Size: --")
+                                .font(.caption2)
+                                .foregroundColor(.black)
+                        }
+                    }
 
-            Text(item.name)
-                .font(.headline)
-                .lineLimit(1)
+                    HStack {
+                        if let color = item.color, !color.isEmpty {
+                            Text("\(color.capitalized) •")
+                                .font(.caption2)
+                                .foregroundColor(.black)
+                        } else {
+                            Text("Color: -- •")
+                                .font(.caption2)
+                                .foregroundColor(.black)
+                        }
+                        if let material = item.material, !material.isEmpty {
+                            Text("\(material.capitalized)")
+                                .font(.caption2)
+                                .foregroundColor(.black)
+                        } else {
+                            Text("Material: --")
+                                .font(.caption2)
+                                .foregroundColor(.black)
+                        }
+                    }
 
-            if let brand = item.brand {
-                Text(brand)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            
-            HStack {
-                if let size = item.size {
-                    Text("Size: \(size.uppercased())")
-                        .font(.caption2)
-                        .foregroundColor(.white)
+                    HStack {
+                        Spacer()
+                        if let price = item.price, price > 0 {
+                            Text("$\(String(format: "%.2f", price))")
+                                .font(.caption)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.blue)
+                        } else {
+                            Text("Price: ---")
+                                .font(.caption)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.blue)
+                        }
+                    }
                 }
-                if let color = item.color {
-                    Text("• \(color.capitalized)")
-                        .font(.caption2)
-                        .foregroundColor(.white)
-                }
-            }
-            
-            if let price = item.price, price > 0 {
-                Text("$\(String(format: "%.2f", price))")
-                    .font(.caption)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.blue)
             }
         }
         .padding(8)
-        .background(Color.black)
-        .cornerRadius(12)
-        .shadow(radius: 2)
+        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 2))
+        // .border(Color.gray)
+        // .cornerRadius(5)
+        // .shadow(radius: 2)
         .onTapGesture {
             controller.equipItem(itemId: item.id, category: item.category)
         }
