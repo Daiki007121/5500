@@ -59,11 +59,9 @@ export const createUserInfo = async (req, res) => {
         const locateUser = await User.findOne({ email });
 
         if (locateUser) {
-            return res
-                .status(400)
-                .json({
-                    message: "Email already in use. Please use another email",
-                });
+            return res.status(400).json({
+                message: "Email already in use. Please use another email",
+            });
         }
 
         const hashPassword = await bcrypt.hash(password, 10);
