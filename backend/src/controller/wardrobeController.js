@@ -26,7 +26,7 @@ export const getAllItems = async (req, res) => {
 // POST request: Insert new clothing item in wardrobe
 export const createClothingItem = async (req, res) => {
   try {
-    let { userId, category, name, price, brand, description, image_data } =
+    let { userId, category, name, price, brand, description, image_data, color, size, material, item_url } =
       req.body;
 
     if (userId && !mongoose.Types.ObjectId.isValid(userId)) {
@@ -46,8 +46,12 @@ export const createClothingItem = async (req, res) => {
       brand,
       description,
       image_data,
+      color,
+      size,
+      material,
+      item_url,
     });
-    
+
     res.status(201).json({ data: newItem });
   } catch (err) {
     console.error("Error:", err);
