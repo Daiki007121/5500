@@ -1,7 +1,7 @@
 import express from "express";
 import {
-  getOutfitsByUserId,
-  createOutfit,
+    getOutfitsByUserId,
+    createOutfit,
 } from "../controller/outfitController.js";
 
 const router = express.Router();

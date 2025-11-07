@@ -10,26 +10,26 @@ const clothingItem = new Schema({
     },
     category: {
         type: String,
-        enum: ['tops', 'bottoms', 'shoes', 'outerwear', 'accessories'],
+        enum: ["tops", "bottoms", "shoes", "outerwear", "accessories"],
         required: true,
         lowercase: true,
-        trim: true
+        trim: true,
     },
     name: {
         type: String,
         required: true,
-        trim: true
+        trim: true,
     },
     color: {
         type: String,
         required: true,
         lowercase: true,
-        trim: true
+        trim: true,
     },
     size: {
         type: String,
         required: true,
-        set: v => v.toUpperCase(),
+        set: (v) => v.toUpperCase(),
         trim: true,
     },
     price: {
@@ -46,7 +46,7 @@ const clothingItem = new Schema({
     createdAt: {
         type: Date,
         default: () => Date.now(),
-    }
+    },
 });
 
 clothingItem.index({ userId: 1, category: 1 });

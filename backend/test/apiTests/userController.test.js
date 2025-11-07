@@ -9,9 +9,9 @@ jest.mock("mongoose", () => ({
     ...jest.requireActual("mongoose"),
     Types: {
         ObjectId: {
-            isValid: jest.fn()
-        }
-    }
+            isValid: jest.fn(),
+        },
+    },
 }));
 
 // Mock the User model
@@ -33,7 +33,7 @@ describe("User API", () => {
                 _id: mockUserId,
                 name: "Tester",
                 email: "tester@example.com",
-                password: "hashedPassword123"
+                password: "hashedPassword123",
             });
 
             const res = await request(app).get(`/api/user/${mockUserId}`);
@@ -51,7 +51,9 @@ describe("User API", () => {
             mongoose.Types.ObjectId.isValid.mockReturnValue(true);
             User.findById.mockResolvedValue(null);
 
-            const res = await request(app).get(`/api/user/68febf955e6a41add2c48460`);
+            const res = await request(app).get(
+                `/api/user/68febf955e6a41add2c48460`
+            );
             expect(res.statusCode).toBe(404);
         });
     });
@@ -63,7 +65,7 @@ describe("User API", () => {
             User.findByIdAndDelete.mockResolvedValue({
                 _id: mockUserId,
                 name: "Tester",
-                email: "tester@example.com"
+                email: "tester@example.com",
             });
 
             const res = await request(app).delete(`/api/user/${mockUserId}`);
@@ -74,7 +76,9 @@ describe("User API", () => {
             mongoose.Types.ObjectId.isValid.mockReturnValue(true);
             User.findByIdAndDelete.mockResolvedValue(null);
 
-            const res = await request(app).delete(`/api/user/507f1f77bcf86cd799439011`);
+            const res = await request(app).delete(
+                `/api/user/507f1f77bcf86cd799439011`
+            );
             expect(res.statusCode).toBe(404);
         });
 
@@ -97,24 +101,32 @@ describe("User API", () => {
                 name: "New User",
                 email: "newuser@example.com",
                 password: "hashedPassword123",
-                createdAt: new Date("2025-01-01T00:00:00.000Z")
+                createdAt: new Date("2025-01-01T00:00:00.000Z"),
             };
 
             User.create.mockResolvedValue(mockUser);
 
-            const res = await request(app).post("/api/user/register")
-                .send({
-                    name: "New User",
-                    email: "newuser@example.com",
-                    password: "validPassword123"
-                });
+            const res = await request(app).post("/api/user/register").send({
+                name: "New User",
+                email: "newuser@example.com",
+                password: "validPassword123",
+            });
 
             expect(res.statusCode).toBe(201);
-            expect(res.body).toHaveProperty("message", "User successfully created!");
+            expect(res.body).toHaveProperty(
+                "message",
+                "User successfully created!"
+            );
             expect(res.body).toHaveProperty("user");
-            expect(res.body.user).toHaveProperty("id", "507f1f77bcf86cd799439011");
+            expect(res.body.user).toHaveProperty(
+                "id",
+                "507f1f77bcf86cd799439011"
+            );
             expect(res.body.user).toHaveProperty("name", "New User");
-            expect(res.body.user).toHaveProperty("email", "newuser@example.com");
+            expect(res.body.user).toHaveProperty(
+                "email",
+                "newuser@example.com"
+            );
             expect(res.body.user).toHaveProperty("createdAt");
             expect(res.body.user).not.toHaveProperty("password");
 
@@ -125,52 +137,50 @@ describe("User API", () => {
         test("returns 400 when email already exists", async () => {
             User.findOne.mockResolvedValue({
                 _id: "existing-id",
-                email: "existing@example.com"
+                email: "existing@example.com",
             });
 
-            const res = await request(app).post("/api/user/register")
-                .send({
-                    name: "Duplicate",
-                    email: "existing@example.com",
-                    password: "validPassword123"
-                });
+            const res = await request(app).post("/api/user/register").send({
+                name: "Duplicate",
+                email: "existing@example.com",
+                password: "validPassword123",
+            });
 
             expect(res.statusCode).toBe(400);
             expect(res.body.message).toContain("Email already in use");
         });
 
         test("returns 400 when password is invalid", async () => {
-            const res = await request(app).post("/api/user/register")
-                .send({
-                    name: "Test",
-                    email: "test@example.com",
-                    password: "bad"
-                });
+            const res = await request(app).post("/api/user/register").send({
+                name: "Test",
+                email: "test@example.com",
+                password: "bad",
+            });
 
             expect(res.statusCode).toBe(400);
             expect(res.body.message).toContain("Password not valid");
         });
 
         test("returns 400 when email is invalid", async () => {
-            const res = await request(app).post("/api/user/register")
-                .send({
-                    name: "Test",
-                    email: "invalidemail",
-                    password: "validPassword123"
-                });
+            const res = await request(app).post("/api/user/register").send({
+                name: "Test",
+                email: "invalidemail",
+                password: "validPassword123",
+            });
 
             expect(res.statusCode).toBe(400);
             expect(res.body.message).toContain("Email is not valid");
         });
 
         test("returns 400 when required fields are missing", async () => {
-            const res = await request(app).post("/api/user/register")
-                .send({
-                    name: "Test"
-                });
+            const res = await request(app).post("/api/user/register").send({
+                name: "Test",
+            });
 
             expect(res.statusCode).toBe(400);
-            expect(res.body.message).toContain("Username, email, and password required");
+            expect(res.body.message).toContain(
+                "Username, email, and password required"
+            );
         });
     });
 
@@ -182,39 +192,46 @@ describe("User API", () => {
                 name: "Login Test",
                 email: "logintest@example.com",
                 password: "hashedPassword123",
-                createdAt: new Date("2025-01-01T00:00:00.000Z")
+                createdAt: new Date("2025-01-01T00:00:00.000Z"),
             };
 
             User.findOne.mockResolvedValue(mockUser);
             bcrypt.compare.mockResolvedValue(true);
 
-            const res = await request(app).post("/api/user/login")
-                .send({
-                    email: "logintest@example.com",
-                    password: "myPassword123"
-                });
+            const res = await request(app).post("/api/user/login").send({
+                email: "logintest@example.com",
+                password: "myPassword123",
+            });
 
             expect(res.statusCode).toBe(200);
             expect(res.body).toHaveProperty("message", "Login successful");
             expect(res.body).toHaveProperty("user");
-            expect(res.body.user).toHaveProperty("id", "507f1f77bcf86cd799439011");
+            expect(res.body.user).toHaveProperty(
+                "id",
+                "507f1f77bcf86cd799439011"
+            );
             expect(res.body.user).toHaveProperty("name", "Login Test");
-            expect(res.body.user).toHaveProperty("email", "logintest@example.com");
+            expect(res.body.user).toHaveProperty(
+                "email",
+                "logintest@example.com"
+            );
             expect(res.body.user).toHaveProperty("createdAt");
             expect(res.body.user).not.toHaveProperty("password");
 
             // Verify bcrypt.compare was called
-            expect(bcrypt.compare).toHaveBeenCalledWith("myPassword123", "hashedPassword123");
+            expect(bcrypt.compare).toHaveBeenCalledWith(
+                "myPassword123",
+                "hashedPassword123"
+            );
         });
 
         test("returns 401 when email does not exist", async () => {
             User.findOne.mockResolvedValue(null);
 
-            const res = await request(app).post("/api/user/login")
-                .send({
-                    email: "nonexistent@example.com",
-                    password: "somePassword123"
-                });
+            const res = await request(app).post("/api/user/login").send({
+                email: "nonexistent@example.com",
+                password: "somePassword123",
+            });
 
             expect(res.statusCode).toBe(401);
             expect(res.body.message).toContain("Invalid email or password");
@@ -225,48 +242,48 @@ describe("User API", () => {
                 _id: "507f1f77bcf86cd799439011",
                 name: "Test User",
                 email: "test@example.com",
-                password: "hashedPassword123"
+                password: "hashedPassword123",
             };
 
             User.findOne.mockResolvedValue(mockUser);
             bcrypt.compare.mockResolvedValue(false);
 
-            const res = await request(app).post("/api/user/login")
-                .send({
-                    email: "test@example.com",
-                    password: "wrongPassword"
-                });
+            const res = await request(app).post("/api/user/login").send({
+                email: "test@example.com",
+                password: "wrongPassword",
+            });
 
             expect(res.statusCode).toBe(401);
             expect(res.body.message).toContain("Invalid email or password");
         });
 
         test("returns 400 when email is missing", async () => {
-            const res = await request(app).post("/api/user/login")
-                .send({
-                    password: "somePassword123"
-                });
+            const res = await request(app).post("/api/user/login").send({
+                password: "somePassword123",
+            });
 
             expect(res.statusCode).toBe(400);
-            expect(res.body.message).toContain("Email and password are required");
+            expect(res.body.message).toContain(
+                "Email and password are required"
+            );
         });
 
         test("returns 400 when password is missing", async () => {
-            const res = await request(app).post("/api/user/login")
-                .send({
-                    email: "test@example.com"
-                });
+            const res = await request(app).post("/api/user/login").send({
+                email: "test@example.com",
+            });
 
             expect(res.statusCode).toBe(400);
-            expect(res.body.message).toContain("Email and password are required");
+            expect(res.body.message).toContain(
+                "Email and password are required"
+            );
         });
 
         test("returns 400 when email format is invalid", async () => {
-            const res = await request(app).post("/api/user/login")
-                .send({
-                    email: "invalidemail",
-                    password: "somePassword123"
-                });
+            const res = await request(app).post("/api/user/login").send({
+                email: "invalidemail",
+                password: "somePassword123",
+            });
 
             expect(res.statusCode).toBe(400);
             expect(res.body.message).toContain("Email is not valid");

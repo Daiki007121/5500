@@ -14,8 +14,8 @@ app.use(express.json({ limit: "50mb" }));
 
 // Log all requests
 app.use((req, res, next) => {
-  // console.log(`${req.method} ${req.url}`);
-  next();
+    // console.log(`${req.method} ${req.url}`);
+    next();
 });
 
 app.use("/api/outfit", outfitRoutes);
@@ -25,18 +25,18 @@ console.log("Routes are supported");
 
 // Test route
 app.get("/api/test", (req, res) => {
-  res.json({ message: "API is working!" });
+    res.json({ message: "API is working!" });
 });
 
 if (process.env.NODE_ENV !== "test") {
-  const startServer = async () => {
-    await connectToDB();
-    await seedData();
-  };
-  const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    const startServer = async () => {
+        await connectToDB();
+        await seedData();
+    };
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
-  startServer();
+    startServer();
 }
 // Export app for Jest/Supertest
 export default app;
