@@ -25,7 +25,7 @@ class WardrobeController: ObservableObject {
     @Published var formImageData: Data?
     @Published var formIsLoading = false
     @Published var formErrorMessage: String?
-    
+
     // NEW FIELDS
     @Published var formColor = ""
     @Published var formSize = "M"
@@ -89,12 +89,12 @@ class WardrobeController: ObservableObject {
             formErrorMessage = "Name is required"
             return
         }
-        
+
         guard !formColor.isEmpty else {
             formErrorMessage = "Color is required"
             return
         }
-        
+
         formIsLoading = true
         Task {
             do {
