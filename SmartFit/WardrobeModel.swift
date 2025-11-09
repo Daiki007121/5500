@@ -24,7 +24,7 @@ struct WardrobeItem: Identifiable, Codable {
 class WardrobeModel: ObservableObject {
     @Published var items: [WardrobeItem] = []
 
-    private let baseURL = "https://smartfit-backend-lhz4.onrender.com/api/wardrobe"
+    private let baseURL = "https://smartfit-development.onrender.com/api/wardrobe"
 
     private func getCurrentUserId() -> String? {
         guard let data = UserDefaults.standard.data(forKey: "currentUser"),
