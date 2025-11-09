@@ -49,4 +49,4 @@ jobs:
 
       - name: Run SwiftLint
         run: swiftlint lint --quiet
-        working-directory: SmartFit/SmartFit
+        working-directory: SmartFit
