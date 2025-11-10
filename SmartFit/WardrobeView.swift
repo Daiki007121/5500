@@ -104,7 +104,7 @@ struct ItemCard: View {
     }
 
     var body: some View {
-        VStack() {
+        VStack {
             ZStack(alignment: .bottomTrailing) {
                 if let imageData = item.image_data,
                    let base64 = imageData.components(separatedBy: ",").last,
@@ -150,7 +150,7 @@ struct ItemCard: View {
                             .fontWeight(.bold)
                             .lineLimit(1)
                     }
-                    
+
                     HStack {
                         if let brand = item.brand, !brand.isEmpty {
                             Text("\(brand.uppercased()) •")
@@ -244,16 +244,15 @@ struct AddItemSheet: View {
                 Section(header: Text("Basic Information")) {
                     TextField("Name *", text: $controller.formName)
                         .autocapitalization(.words)
-                    
+
                     Picker("Category *", selection: $controller.formCategory) {
                         ForEach(controller.formCategories, id: \.self) { cat in
                             Text(cat.capitalized)
                         }
                     }
-                    
+
                     TextField("Brand (optional)", text: $controller.formBrand)
                         .autocapitalization(.words)
-                    
                     TextField("Color *", text: $controller.formColor)
                         .autocapitalization(.words)
                 }
@@ -280,7 +279,6 @@ struct AddItemSheet: View {
                     TextField("Product URL", text: $controller.formItemUrl)
                         .autocapitalization(.none)
                         .keyboardType(.URL)
-                    
                     TextField("Material", text: $controller.formMaterial)
                         .autocapitalization(.words)
                 }
@@ -292,7 +290,7 @@ struct AddItemSheet: View {
                             .font(.caption)
                     }
                 }
-                
+
                 Section {
                     Text("* Required fields")
                         .font(.caption)
@@ -312,8 +310,8 @@ struct AddItemSheet: View {
                     Button("Add") {
                         controller.submitAddItem()
                     }
-                    .disabled(controller.formName.isEmpty || 
-                             controller.formColor.isEmpty || 
+                    .disabled(controller.formName.isEmpty ||
+                             controller.formColor.isEmpty ||
                              controller.formIsLoading)
                 }
             }

@@ -63,10 +63,13 @@ struct AuthView: View {
                 .cornerRadius(10)
                 .disabled(isLoading)
 
-                Button(action: { isLoginMode.toggle() }) {
-                    Text(isLoginMode ? "Need an account? Register" : "Already have an account? Login")
-                        .foregroundColor(.blue)
-                }
+                Button(
+                    action: { isLoginMode.toggle() },
+                    label: {
+                        Text(isLoginMode ? "Need an account? Register" : "Already have an account? Login")
+                            .foregroundColor(.blue)
+                    }
+                )
 
                 Button(action: handleGuestLogin) {
                     Text("Continue as Guest")
