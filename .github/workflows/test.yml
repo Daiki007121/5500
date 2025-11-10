@@ -1,14 +1,15 @@
-name: Run Tests
+name: Run Tests and Lint
 
 on:
   push:
     branches:
       - '**'
+  pull_request:
 
 jobs:
-  test:
+  # 🧪 Node backend tests
+  backend-test:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -35,3 +36,17 @@ jobs:
       - name: Run tests
         run: npm test
         working-directory: backend
+
+  ios-lint:
+    name: SwiftLint Check
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install SwiftLint
+        run: brew install swiftlint
+
+      - name: Run SwiftLint
+        run: swiftlint lint --quiet
+        working-directory: SmartFit

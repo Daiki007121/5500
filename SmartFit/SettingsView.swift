@@ -32,9 +32,11 @@ struct SettingsView: View {
                         }
                     }
 
-                    Button(action: {
+                Button(
+                    action: {
                         authController.signOut()
-                    }) {
+                    },
+                    label: {
                         HStack {
                             Text("Sign Out")
                                 .foregroundColor(.red)
@@ -42,7 +44,7 @@ struct SettingsView: View {
                             Image(systemName: "arrow.right.square")
                                 .foregroundColor(.red)
                         }
-                    }
+                    })
                 }
             }
             .navigationTitle("Settings")

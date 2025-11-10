@@ -6,25 +6,28 @@ struct WardrobeItem: Identifiable, Codable {
     let category: String
     let name: String
     let brand: String?
+// swiftlint:disable:next identifier_name
     let image_data: String?
     let price: Double?
     let color: String?
     let size: String?
     let material: String?
+// swiftlint:disable:next identifier_name
     let item_url: String?
-
     enum CodingKeys: String, CodingKey {
         case id = "_id"
+// swiftlint:disable:next identifier_name
         case userId, category, name, brand, image_data, price
+// swiftlint:disable:next identifier_name
         case color, size, material, item_url
     }
 }
 
-
 class WardrobeModel: ObservableObject {
     @Published var items: [WardrobeItem] = []
 
-    private let baseURL = "https://smartfit-backend-lhz4.onrender.com/api/wardrobe"
+
+    private let baseURL = "https://smartfit-development.onrender.com/api/wardrobe"
     private let urlSession: URLSession
 
     init(urlSession: URLSession = .shared) {
@@ -62,6 +65,7 @@ class WardrobeModel: ObservableObject {
         }
     }
 
+    // swiftlint:disable:next function_parameter_count
     func addItem(
         name: String,
         category: String,
@@ -93,15 +97,15 @@ class WardrobeModel: ObservableObject {
             "color": color,
             "size": size.uppercased()
         ]
-        
+
         if !price.isEmpty, let priceValue = Double(price), priceValue > 0 {
             body["price"] = priceValue
         }
-        
+
         if !material.isEmpty {
             body["material"] = material
         }
-        
+
         if !itemUrl.isEmpty {
             body["item_url"] = itemUrl
         }
@@ -118,7 +122,10 @@ class WardrobeModel: ObservableObject {
         if let httpResponse = response as? HTTPURLResponse {
             print("Response status code: \(httpResponse.statusCode)")
             if httpResponse.statusCode != 201 && httpResponse.statusCode != 200 {
-                throw NSError(domain: "Server Error", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Failed to add item"])
+                throw NSError(
+                    domain: "Server Error", code: httpResponse.statusCode,
+                    userInfo: [NSLocalizedDescriptionKey: "Failed to add item"]
+                )
             }
         }
 
