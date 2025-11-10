@@ -125,8 +125,13 @@ class AuthenticationController: ObservableObject {
     }
 
     func loginAsGuest() {
-        let guestEmail = "guest@smartfit.app"
-        let user = User(email: guestEmail, name: "Guest", idToken: UserIDManager.shared.userID)
+        let guestID = UserDefaults.standard.string(forKey: "guestID") ?? {
+            let newID = UUID().uuidString
+            UserDefaults.standard.set(newID, forKey: "guestID")
+            return newID
+        }()
+
+        let user = User(email: "-", name: "Guest", idToken: guestID)
         self.currentUser = user
         saveUserToStorage(user)
         delegate?.didSignIn(user: user)

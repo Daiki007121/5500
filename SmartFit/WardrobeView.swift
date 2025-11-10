@@ -6,48 +6,63 @@ struct WardrobeView: View {
 
     var body: some View {
         NavigationView {
-            VStack {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack {
-                        ForEach(controller.categories, id: \.self) { category in
-                            Button(category.capitalized) {
-                                controller.selectedCategory = category
-                            }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 8)
-                            .background(controller.selectedCategory == category ? Color.blue : Color.gray.opacity(0.2))
-                            .foregroundColor(controller.selectedCategory == category ? .white : .black)
-                            .cornerRadius(20)
-                        }
-                    }
-                    .padding()
-                }
-
-                if controller.filteredItems.isEmpty {
-                    VStack {
-                        Image(systemName: "hanger")
-                            .font(.system(size: 60))
-                            .foregroundColor(.gray)
-                        Text("No items yet")
+            ZStack {
+                if controller.isLoading {
+                    // Loading screen
+                    VStack(spacing: 20) {
+                        ProgressView()
+                            .scaleEffect(1.5)
+                            .progressViewStyle(CircularProgressViewStyle(tint: .blue))
+                        Text("Loading your wardrobe...")
                             .font(.headline)
-                            .padding()
-                        Button("Add Item") {
-                            controller.showAddSheet = true
-                        }
-                        .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
+                            .foregroundColor(.gray)
                     }
-                    .frame(maxHeight: .infinity)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
-                    ScrollView {
-                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                            ForEach(controller.filteredItems) { item in
-                                ItemCard(item: item, controller: controller)
+                    VStack {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack {
+                                ForEach(controller.categories, id: \.self) { category in
+                                    Button(category.capitalized) {
+                                        controller.selectedCategory = category
+                                    }
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 8)
+                                    .background(controller.selectedCategory == category ? Color.blue : Color.gray.opacity(0.2))
+                                    .foregroundColor(controller.selectedCategory == category ? .white : .black)
+                                    .cornerRadius(20)
+                                }
+                            }
+                            .padding()
+                        }
+
+                        if controller.filteredItems.isEmpty {
+                            VStack {
+                                Image(systemName: "hanger")
+                                    .font(.system(size: 60))
+                                    .foregroundColor(.gray)
+                                Text("No items yet")
+                                    .font(.headline)
+                                    .padding()
+                                Button("Add Item") {
+                                    controller.showAddSheet = true
+                                }
+                                .padding()
+                                .background(Color.blue)
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
+                            }
+                            .frame(maxHeight: .infinity)
+                        } else {
+                            ScrollView {
+                                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                                    ForEach(controller.filteredItems) { item in
+                                        ItemCard(item: item, controller: controller)
+                                    }
+                                }
+                                .padding()
                             }
                         }
-                        .padding()
                     }
                 }
             }
