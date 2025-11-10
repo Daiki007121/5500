@@ -30,6 +30,12 @@ Doppl lacks a wardrobe feature since they only have suggested outfits that are p
 - brew install swiftlint (Install brew first if not already)
 - swiftlint lint --quiet
 
+### Branching Organization
+
+- Each member created their own 'working branch' that reflected on the ticket they are completing in the backlog
+- Development branch was implemented and all members pushed (PR) into this branch from their working branch
+- Development branch was pushed into main branch after Sprint 2.
+
 ### Sprint 2 Burn Chart:
 [Burn Chart Link] ()
 
