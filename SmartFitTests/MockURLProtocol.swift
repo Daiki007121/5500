@@ -124,4 +124,52 @@ class MockURLProtocol: URLProtocol {
         )
         mockResponses[url] = (data, response, nil)
     }
+
+    static func mockWardrobeFetchSuccess(url: URL) {
+        let json = """
+        {
+            "data": [
+                {
+                    "_id": "item-1",
+                    "userId": "mock-user-id-123",
+                    "name": "Test Shirt",
+                    "category": "tops",
+                    "brand": "Test Brand",
+                    "color": "Blue",
+                    "size": "M",
+                    "price": 29.99,
+                    "material": "Cotton",
+                    "item_url": "https://example.com/shirt",
+                    "image_data": "data:image/jpeg;base64,/9j/4AAQSkZJRg=="
+                },
+                {
+                    "_id": "item-2",
+                    "userId": "mock-user-id-123",
+                    "name": "Test Pants",
+                    "category": "bottoms",
+                    "brand": "Test Brand",
+                    "color": "Black",
+                    "size": "L",
+                    "price": 49.99,
+                    "material": "Denim",
+                    "item_url": "https://example.com/pants",
+                    "image_data": "data:image/jpeg;base64,/9j/4AAQSkZJRg=="
+                }
+            ]
+        }
+        """
+        let data = json.data(using: .utf8)
+        let response = HTTPURLResponse(
+            url: url,
+            statusCode: 200,
+            httpVersion: nil,
+            headerFields: ["Content-Type": "application/json"]
+        )
+        mockResponses[url] = (data, response, nil)
+    }
+
+    static func mockWardrobeFetchFailure(url: URL) {
+        let error = URLError(.networkConnectionLost)
+        mockResponses[url] = (nil, nil, error)
+    }
 }
