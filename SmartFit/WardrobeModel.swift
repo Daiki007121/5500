@@ -26,7 +26,13 @@ struct WardrobeItem: Identifiable, Codable {
 class WardrobeModel: ObservableObject {
     @Published var items: [WardrobeItem] = []
 
+
     private let baseURL = "https://smartfit-development.onrender.com/api/wardrobe"
+    private let urlSession: URLSession
+
+    init(urlSession: URLSession = .shared) {
+        self.urlSession = urlSession
+    }
 
     private func getCurrentUserId() -> String? {
         guard let data = UserDefaults.standard.data(forKey: "currentUser"),
@@ -45,13 +51,17 @@ class WardrobeModel: ObservableObject {
             throw NSError(domain: "Invalid URL", code: -1)
         }
 
-        let (data, _) = try await URLSession.shared.data(from: url)
+        let (data, _) = try await urlSession.data(from: url)
 
         if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
            let dataArray = json["data"] as? [[String: Any]] {
             let itemsData = try JSONSerialization.data(withJSONObject: dataArray)
             let decoder = JSONDecoder()
-            items = try decoder.decode([WardrobeItem].self, from: itemsData)
+            let decodedItems = try decoder.decode([WardrobeItem].self, from: itemsData)
+
+            await MainActor.run {
+                self.items = decodedItems
+            }
         }
     }
 
@@ -107,8 +117,8 @@ class WardrobeModel: ObservableObject {
 
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
 
-        let (_, response) = try await URLSession.shared.data(for: request)
-
+        let (_, response) = try await urlSession.data(for: request)
+        
         if let httpResponse = response as? HTTPURLResponse {
             print("Response status code: \(httpResponse.statusCode)")
             if httpResponse.statusCode != 201 && httpResponse.statusCode != 200 {

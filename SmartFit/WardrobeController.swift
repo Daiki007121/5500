@@ -13,6 +13,10 @@ class WardrobeController: ObservableObject {
     @Published var showAddSheet = false
     @Published var outfits: [Int: [String: String]] = [1: [:], 2: [:], 3: [:]]
 
+    // Loading state for initial wardrobe fetch
+    @Published var isLoading = false
+    @Published var hasLoadedItems = false
+
     var currentEquippedOutfit: [String: String] {
         outfits[selectedOutfit] ?? [:]
     }
@@ -37,6 +41,10 @@ class WardrobeController: ObservableObject {
     let formCategories = ["tops", "bottoms", "shoes", "outerwear", "accessories"]
     let sizeOptions = ["XS", "S", "M", "L", "XL", "XXL", "Custom"]
 
+    init(model: WardrobeModel = WardrobeModel()) {
+        self.model = model
+    }
+
     var filteredItems: [WardrobeItem] {
         if selectedCategory == "all" {
             return model.items
@@ -45,16 +53,31 @@ class WardrobeController: ObservableObject {
     }
 
     func loadItems() {
+        // Only load items once
+        guard !hasLoadedItems else { return }
+
         Task {
+            await MainActor.run {
+                self.isLoading = true
+            }
+
             do {
                 try await model.fetchItems()
                 if !loadOutfits() {
-                    DispatchQueue.main.async {
+                    await MainActor.run {
                         self.outfits = [1: [:], 2: [:], 3: [:]]
                     }
                 }
+                await MainActor.run {
+                    self.isLoading = false
+                    self.hasLoadedItems = true
+                }
             } catch {
                 print("Error loading items: \(error)")
+                await MainActor.run {
+                    self.isLoading = false
+                    self.hasLoadedItems = true
+                }
             }
         }
     }
