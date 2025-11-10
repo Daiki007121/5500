@@ -27,7 +27,7 @@ class WardrobeModel: ObservableObject {
     @Published var items: [WardrobeItem] = []
 
 
-    private let baseURL = "https://smartfit-development.onrender.com/api/wardrobe"
+    private let baseURL = "https://smartfit-backend-lhz4.onrender.com/api/wardrobe"
     private let urlSession: URLSession
 
     init(urlSession: URLSession = .shared) {
