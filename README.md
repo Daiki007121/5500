@@ -37,7 +37,7 @@ Doppl lacks a wardrobe feature since they only have suggested outfits that are p
 - Development branch was pushed into main branch after Sprint 2.
 
 ### Sprint 2 Burn Chart:
-[Burn Chart Link] ()
+[Burn Chart Link] (https://github.com/users/yu-edwin/projects/1/insights/2?period=2W)
 
 ### Access Instructions
 

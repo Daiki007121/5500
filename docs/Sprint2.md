@@ -1,6 +1,8 @@
 # Sprint 2 Report - Smartfit
 
-##  Section 1 - Sprint Planning & Process Improvement
+## Sprint Planning & Process Improvement
+
+## MVP: User Login feature and Frontend UI layout
 
 ### Process Improvement Plan:
 
@@ -69,7 +71,7 @@
 - 50% sprint increase (May be due to increased number of tickets) 
 - Workload balanced between backend, frontend, and testing efforts.
 
-## Section 2 - Automated Testing
+## Automated Testing
 
 ### Testing Framework & Execution
 
@@ -84,7 +86,7 @@
 - Ai was used to help lay the format/syntax of testing, but expected results and actual results were manually created to ensure proper expected flow
 
 
-## Section 3 - Code Quality Tools
+## Code Quality Tools
 
 **ESLint Configuration**
 - Eslint.config.js file is present
@@ -157,3 +159,34 @@
 
 - Code Review
 1. PR description and review contained much more data in accurately describing what was done, any changes, and had much better review than 'looks good to me'.
+
+### Burn Chart
+[Chart Link] (https://github.com/users/yu-edwin/projects/1/insights/2?period=2W)
+
+## CI/CD Pipeline
+
+**Continuous Integration (CI)**
+- Configured using **GitHub Actions** located in `.github/workflows/test.yml`
+- Workflow triggers on all Pull Requests to `development` and `main`
+- Steps included:
+  1. **Install Dependencies:** `npm install`
+  2. **Run Linter:** `npm run lint`
+  3. **Run Tests:** `npm run test -- --coverage`
+- Branch protection rules enabled — PRs cannot merge unless all checks pass 
+- CI status visible in GitHub under the **Actions** tab  
+  [View CI Workflow](https://github.com/yu-edwin/SmartFit/actions)
+
+**Continuous Deployment (CD)**
+- Automated deployment configured through **appitize**
+- Must manually redeploy 
+- Link changes after every update
+- **Live URL:** [SmartFit Application]()
+
+**CI/CD Pain Points**
+1. Initial pipeline failed due to missing environment variables.  
+3. Some PRs merged prematurely, creating minor merge conflicts; resolved with branch protection rules.  
+
+
+### MVP Deliverable
+
+[SmartFit Application]()
