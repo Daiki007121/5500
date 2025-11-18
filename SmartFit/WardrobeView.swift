@@ -100,11 +100,19 @@ struct WardrobeView: View {
                 }
                 .padding(20)
             }
+            // Displays Add item to wardrobe sheet (POST Request)
             .sheet(isPresented: $controller.showAddSheet) {
                 AddItemSheet(controller: controller)
             }
+            // Displays Update existing clothing item sheet (PUT Request)
             .sheet(isPresented: $controller.showEditSheet) {
                 UpdateItemSheet(controller: controller)
+            }
+            // Displays wardrobeItem info card
+            .sheet(isPresented: $controller.showInfoSheet) {
+                if let item = controller.infoItem {
+                    ItemInfoSheet(item: item)
+                }
             }
             .task {
                 controller.loadItems()
@@ -163,7 +171,7 @@ struct ItemCard: View {
                 VStack(spacing: 8) {
                     // Info button (top)
                     Button {
-                        // TODO: show info sheet / alert; for now just log
+                        controller.showInfo(for: item)
                         print("Info tapped for \(item.name)")
                     } label: {
                         Image(systemName: "info.circle")

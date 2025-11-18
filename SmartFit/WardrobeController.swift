@@ -52,6 +52,10 @@ class WardrobeController: ObservableObject {
     @Published var editSelectedImage: PhotosPickerItem?
     @Published var editImageData: Data?
 
+    // Variables for info displayed for each wardrobeItem
+    @Published var showInfoSheet = false
+    @Published var infoItem: WardrobeItem? = nil
+
     let categories = ["all", "tops", "bottoms", "shoes", "outerwear", "accessories"]
     let formCategories = ["tops", "bottoms", "shoes", "outerwear", "accessories"]
     let sizeOptions = ["XS", "S", "M", "L", "XL", "XXL", "Custom"]
@@ -297,5 +301,11 @@ class WardrobeController: ObservableObject {
                 print("PUT failed for item \(item.id): \(error)")
             }
         }
+    }
+
+    // Helper method for displaying info sheet for each clothing item
+    func showInfo(for item: WardrobeItem) {
+        infoItem = item
+        showInfoSheet = true
     }
 }
