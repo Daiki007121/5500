@@ -1,6 +1,7 @@
 import Foundation
 import PhotosUI
 import SwiftUI
+import Combine
 
 class WardrobeController: ObservableObject {
     @Published var model = WardrobeModel()
@@ -37,12 +38,34 @@ class WardrobeController: ObservableObject {
     @Published var formMaterial = ""
     @Published var formItemUrl = ""
 
+    // Edit form states for PUT Request Update clothing item
+    @Published var editingItem: WardrobeItem? = nil
+    @Published var showEditSheet = false
+    @Published var editName = ""
+    @Published var editCategory = "tops"
+    @Published var editBrand = ""
+    @Published var editColor = ""
+    @Published var editSize = "M"
+    @Published var editPrice = ""
+    @Published var editMaterial = ""
+    @Published var editItemUrl = ""
+    @Published var editSelectedImage: PhotosPickerItem?
+    @Published var editImageData: Data?
+
     let categories = ["all", "tops", "bottoms", "shoes", "outerwear", "accessories"]
     let formCategories = ["tops", "bottoms", "shoes", "outerwear", "accessories"]
     let sizeOptions = ["XS", "S", "M", "L", "XL", "XXL", "Custom"]
 
+    private var cancellables = Set<AnyCancellable>()
+
     init(model: WardrobeModel = WardrobeModel()) {
         self.model = model
+        model.objectWillChange
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.objectWillChange.send()
+            }
+            .store(in: &cancellables)
     }
 
     var filteredItems: [WardrobeItem] {
@@ -168,5 +191,111 @@ class WardrobeController: ObservableObject {
         outfits = updatedOutfits
         print("Updated outfit \(selectedOutfit): \(currentEquippedOutfit)")
         saveOutfits()
+    }
+    // Function for PUT clothingItem request
+    func startEditing(_ item: WardrobeItem) {
+        editingItem = item
+        editName = item.name
+        editCategory = item.category
+        editBrand = item.brand ?? ""
+        editColor = item.color ?? ""
+        editSize = item.size ?? "M"
+        editPrice = item.price != nil ? String(item.price!) : ""
+        editMaterial = item.material ?? ""
+        editItemUrl = item.item_url ?? ""
+        editSelectedImage = nil
+        editImageData = nil
+        showEditSheet = true
+    }
+    // PUT clothingItem request. Ensures quality in updated info and calls request
+    func submitEdit() {
+        guard let item = editingItem else { return }
+
+        Task {
+            do {
+                // 1. Convert price String -> Double? from the form
+                var newPrice: Double? = nil
+                if !editPrice.isEmpty, let val = Double(editPrice) {
+                    newPrice = val
+                }
+
+                // 2. Compute what actually changed vs the original item
+                // Required fields (non-optional in model)
+                let nameToSend: String? =
+                    (editName == item.name) ? nil : editName
+
+                let categoryToSend: String? =
+                    (editCategory == item.category) ? nil : editCategory
+
+                // Optional strings – treat nil and "" the same for comparison
+                let originalBrand = item.brand ?? ""
+                let brandToSend: String? =
+                    (editBrand == originalBrand) ? nil : editBrand
+
+                let originalColor = item.color ?? ""
+                let colorToSend: String? =
+                    (editColor == originalColor) ? nil : editColor
+
+                let originalSize = item.size ?? ""
+                let sizeToSend: String? =
+                    (editSize == originalSize) ? nil : editSize
+
+                let originalMaterial = item.material ?? ""
+                let materialToSend: String? =
+                    (editMaterial == originalMaterial) ? nil : editMaterial
+
+                let originalItemUrl = item.item_url ?? ""
+                let itemUrlToSend: String? =
+                    (editItemUrl == originalItemUrl) ? nil : editItemUrl
+
+                // Optional price (Double)
+                let originalPrice = item.price
+                let priceToSend: Double? =
+                    (originalPrice == newPrice) ? nil : newPrice
+
+                // Checks if user edits but changes nothing.
+                let nothingChanged =
+                    nameToSend == nil &&
+                    categoryToSend == nil &&
+                    brandToSend == nil &&
+                    colorToSend == nil &&
+                    sizeToSend == nil &&
+                    priceToSend == nil &&
+                    materialToSend == nil &&
+                    itemUrlToSend == nil &&
+                    editImageData == nil
+
+                if nothingChanged {
+                    await MainActor.run {
+                        self.showEditSheet = false   // behaves like Cancel
+                    }
+                    return
+                }
+                // 3. Call the model’s updateItem with ONLY changed fields
+                try await model.updateItem(
+                    itemId: item.id,
+                    name: nameToSend,
+                    category: categoryToSend,
+                    brand: brandToSend,
+                    color: colorToSend,
+                    size: sizeToSend,
+                    price: priceToSend,
+                    material: materialToSend,
+                    itemUrl: itemUrlToSend,
+                    imageData: editImageData
+                )
+
+                // 4. Refresh items from backend so everything is in sync
+                try await model.fetchItems()
+
+                await MainActor.run {
+                    self.objectWillChange.send()
+                    self.showEditSheet = false
+                }
+                print("PUT succeeded for item \(item.id)")
+            } catch {
+                print("PUT failed for item \(item.id): \(error)")
+            }
+        }
     }
 }

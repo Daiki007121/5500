@@ -103,6 +103,9 @@ struct WardrobeView: View {
             .sheet(isPresented: $controller.showAddSheet) {
                 AddItemSheet(controller: controller)
             }
+            .sheet(isPresented: $controller.showEditSheet) {
+                UpdateItemSheet(controller: controller)
+            }
             .task {
                 controller.loadItems()
             }
@@ -156,6 +159,38 @@ struct ItemCard: View {
                         .padding(8)
                 }
             }
+            .overlay(alignment: .topTrailing) {
+                VStack(spacing: 8) {
+                    // Info button (top)
+                    Button {
+                        // TODO: show info sheet / alert; for now just log
+                        print("Info tapped for \(item.name)")
+                    } label: {
+                        Image(systemName: "info.circle")
+                            .font(.system(size: 14, weight: .bold))
+                            .padding(6)
+                            .background(Color.white.opacity(0.9))
+                            .clipShape(Circle())
+                            .shadow(radius: 2)
+                    }
+                    .buttonStyle(.plain)
+
+                    // Edit button (below)
+                    Button {
+                        controller.startEditing(item)
+                    } label: {
+                        Image(systemName: "pencil")
+                            .font(.system(size: 14, weight: .bold))
+                            .padding(6)
+                            .background(Color.white.opacity(0.9))
+                            .clipShape(Circle())
+                            .shadow(radius: 2)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(8)
+            }
+
             ZStack(alignment: .bottomTrailing) {
                 VStack(alignment: .center) {
                     HStack {
