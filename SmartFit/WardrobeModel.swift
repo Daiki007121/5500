@@ -79,7 +79,7 @@ class WardrobeModel: ObservableObject {
         size: String,
         price: String,
         material: String,
-        itemUrl: String,
+        itemUrl: String?,
         imageData: Data?
     ) async throws {
         guard let userId = getCurrentUserId() else {
@@ -111,7 +111,7 @@ class WardrobeModel: ObservableObject {
             body["material"] = material
         }
 
-        if !itemUrl.isEmpty {
+        if let itemUrl = itemUrl {
             body["item_url"] = itemUrl
         }
 
