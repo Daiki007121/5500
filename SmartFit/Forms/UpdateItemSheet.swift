@@ -17,8 +17,7 @@ struct UpdateItemSheet: View {
                             .scaledToFit()
                             .frame(maxHeight: 200)
                             .cornerRadius(8)
-                    }
-                    else if let item = controller.editingItem,
+                    } else if let item = controller.editingItem,
                             let imageString = item.image_data,
                             let base64 = imageString.components(separatedBy: ",").last,
                             let data = Data(base64Encoded: base64),
