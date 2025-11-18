@@ -80,8 +80,8 @@ class WardrobeController: ObservableObject {
     }
 
     func loadItems() {
-        // Only load items once
-        guard !hasLoadedItems else { return }
+        // // Only load items once
+        // guard !hasLoadedItems else { return }
 
         Task {
             await MainActor.run {
@@ -90,21 +90,25 @@ class WardrobeController: ObservableObject {
 
             do {
                 try await model.fetchItems()
+                if model.items.isEmpty {
+                    await seedStarterWardrobeIfNeeded()
+                }
                 if !loadOutfits() {
                     await MainActor.run {
                         self.outfits = [1: [:], 2: [:], 3: [:]]
                     }
                 }
-                await MainActor.run {
-                    self.isLoading = false
-                    self.hasLoadedItems = true
-                }
+
             } catch {
                 print("Error loading items: \(error)")
                 await MainActor.run {
                     self.isLoading = false
                     self.hasLoadedItems = true
                 }
+            }
+            await MainActor.run {
+                self.isLoading = false
+                self.hasLoadedItems = true
             }
         }
     }
@@ -307,5 +311,54 @@ class WardrobeController: ObservableObject {
     func showInfo(for item: WardrobeItem) {
         infoItem = item
         showInfoSheet = true
+    }
+    // Seeds data into newly registered account
+    private func seedStarterWardrobeIfNeeded() async {
+        do {
+            // If there are already items, don't seed
+            if !model.items.isEmpty {
+                return
+            }
+            // Seed some starter items (no image for now)
+            try await model.addItem(
+                name: "Basic White Tee",
+                category: "tops",
+                brand: "SmartFit",
+                color: "White",
+                size: "M",
+                price: "9.99",
+                material: "Cotton",
+                itemUrl: "",
+                imageData: nil
+            )
+
+            try await model.addItem(
+                name: "Blue Jeans",
+                category: "bottoms",
+                brand: "SmartFit",
+                color: "Blue",
+                size: "32",
+                price: "39.99",
+                material: "Denim",
+                itemUrl: "",
+                imageData: nil
+            )
+
+            try await model.addItem(
+                name: "White Sneakers",
+                category: "shoes",
+                brand: "SmartFit",
+                color: "White",
+                size: "10",
+                price: "59.99",
+                material: "Leather",
+                itemUrl: "",
+                imageData: nil
+            )
+
+            print("Seeded starter wardrobe for this user")
+        } catch {
+            print("Failed to seed starter wardrobe: \(error)")
+        }
     }
 }
