@@ -313,7 +313,7 @@ class WardrobeController: ObservableObject { // swiftlint:disable:this type_body
             }
             let scarfUrl = SeedImages.scarfUrl
             let sunglassesUrl = SeedImages.sunglassesUrl
-            let jeansUrl = SeedImages.sunglassesUrl
+            let jeansUrl = SeedImages.jeansUrl
             let tShirtUrl = SeedImages.tShirtUrl
             let hoodieUrl = SeedImages.hoodieUrl
             let scarfImageData = imageData(fromDataURL: scarfUrl)
