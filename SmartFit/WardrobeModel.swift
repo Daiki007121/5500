@@ -31,7 +31,6 @@ struct UpdateWardrobeResponse: Codable {
 class WardrobeModel: ObservableObject {
     @Published var items: [WardrobeItem] = []
 
-
     private let baseURL = "https://smartfit-backend-lhz4.onrender.com/api/wardrobe"
     private let urlSession: URLSession
 
@@ -123,7 +122,7 @@ class WardrobeModel: ObservableObject {
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
 
         let (_, response) = try await urlSession.data(for: request)
-        
+
         if let httpResponse = response as? HTTPURLResponse {
             print("Response status code: \(httpResponse.statusCode)")
             if httpResponse.statusCode != 201 && httpResponse.statusCode != 200 {
@@ -137,9 +136,8 @@ class WardrobeModel: ObservableObject {
         try await fetchItems()
     }
 
-
-
     // Main call for PUT request wardrobeItem (clothingItem)
+    // swiftlint:disable:next cyclomatic_complexity function_body_length
     func updateItem(
         itemId: String,
         name: String? = nil,
@@ -150,8 +148,7 @@ class WardrobeModel: ObservableObject {
         price: Double? = nil,
         material: String? = nil,
         itemUrl: String? = nil,
-        imageData: Data? = nil          // 👈 new
-
+        imageData: Data? = nil
     ) async throws {
         // 1. Build URL: /api/wardrobe/:id
         guard let url = URL(string: "\(baseURL)/\(itemId)") else {
@@ -161,7 +158,6 @@ class WardrobeModel: ObservableObject {
         var request = URLRequest(url: url)
         request.httpMethod = "PUT"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
         // 2. Build body with only non-nil values (partial update)
         var body: [String: Any] = [:]
 

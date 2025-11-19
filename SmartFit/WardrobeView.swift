@@ -28,8 +28,14 @@ struct WardrobeView: View {
                                     }
                                     .padding(.horizontal, 16)
                                     .padding(.vertical, 8)
-                                    .background(controller.selectedCategory == category ? Color.blue : Color.gray.opacity(0.2))
-                                    .foregroundColor(controller.selectedCategory == category ? .white : .black)
+                                    .background(controller.selectedCategory == category
+                                        ? Color.blue
+                                        : Color.gray.opacity(0.2)
+                                    )
+                                    .foregroundColor(controller.selectedCategory == category
+                                        ? .white
+                                        : .black
+                                    )
                                     .cornerRadius(20)
                                 }
                             }
