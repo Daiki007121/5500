@@ -28,13 +28,15 @@ struct WardrobeView: View {
                                     }
                                     .padding(.horizontal, 16)
                                     .padding(.vertical, 8)
-                                    .background(controller.selectedCategory == category
-                                        ? Color.blue
-                                        : Color.gray.opacity(0.2)
+                                    .background(
+                                        controller.selectedCategory == category
+                                            ? Color.blue
+                                            : Color.gray.opacity(0.2)
                                     )
-                                    .foregroundColor(controller.selectedCategory == category
-                                        ? .white
-                                        : .black
+                                    .foregroundColor(
+                                        controller.selectedCategory == category
+                                            ? .white
+                                            : .black
                                     )
                                     .cornerRadius(20)
                                 }
@@ -61,7 +63,10 @@ struct WardrobeView: View {
                             .frame(maxHeight: .infinity)
                         } else {
                             ScrollView {
-                                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                                LazyVGrid(
+                                    columns: [GridItem(.flexible()), GridItem(.flexible())],
+                                    spacing: 16
+                                ) {
                                     ForEach(controller.filteredItems) { item in
                                         ItemCard(item: item, controller: controller)
                                     }
@@ -74,14 +79,30 @@ struct WardrobeView: View {
             }
             .navigationTitle("Wardrobe")
             .toolbar {
+                // Left: URL import button
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        controller.showUrlImportSheet = true
+                    } label: {
+                        Image(systemName: "link.badge.plus")
+                    }
+                }
+
+                // Right: outfit selector (1–3)
                 ToolbarItem(placement: .topBarTrailing) {
                     HStack(spacing: 8) {
                         ForEach(1...3, id: \.self) { outfitNumber in
                             ZStack {
-                                controller.selectedOutfit == outfitNumber ? Color.blue : Color.gray.opacity(0.2)
+                                controller.selectedOutfit == outfitNumber
+                                    ? Color.blue
+                                    : Color.gray.opacity(0.2)
 
                                 Text(String(outfitNumber))
-                                    .foregroundColor(controller.selectedOutfit == outfitNumber ? .white : .black)
+                                    .foregroundColor(
+                                        controller.selectedOutfit == outfitNumber
+                                            ? .white
+                                            : .black
+                                    )
                                     .font(.system(size: 14, weight: .semibold))
                             }
                             .frame(width: 40, height: 40)
@@ -105,6 +126,10 @@ struct WardrobeView: View {
                         .clipShape(Circle())
                 }
                 .padding(20)
+            }
+            // URL import sheet
+            .sheet(isPresented: $controller.showUrlImportSheet) {
+                UrlImportSheet(controller: controller)
             }
             // Displays Add item to wardrobe sheet (POST Request)
             .sheet(isPresented: $controller.showAddSheet) {
@@ -275,7 +300,10 @@ struct ItemCard: View {
             }
         }
         .padding(8)
-        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 2))
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(Color.gray, lineWidth: 2)
+        )
         // .border(Color.gray)
         // .cornerRadius(5)
         // .shadow(radius: 2)
@@ -293,7 +321,8 @@ struct AddItemSheet: View {
         NavigationView {
             Form {
                 Section(header: Text("Photo *")) {
-                    if let imageData = controller.formImageData, let uiImage = UIImage(data: imageData) {
+                    if let imageData = controller.formImageData,
+                       let uiImage = UIImage(data: imageData) {
                         Image(uiImage: uiImage)
                             .resizable()
                             .scaledToFit()
@@ -374,9 +403,11 @@ struct AddItemSheet: View {
                     Button("Add") {
                         controller.submitAddItem()
                     }
-                    .disabled(controller.formName.isEmpty ||
-                             controller.formColor.isEmpty ||
-                             controller.formIsLoading)
+                    .disabled(
+                        controller.formName.isEmpty ||
+                        controller.formColor.isEmpty ||
+                        controller.formIsLoading
+                    )
                 }
             }
             .onChange(of: controller.formSelectedImage) { _, newValue in
