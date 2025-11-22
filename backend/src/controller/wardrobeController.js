@@ -146,7 +146,7 @@ export const importFromUrl = async (req, res) => {
             price: scrapedData.price || 0,
             color: scrapedData.color || "Not specified",
             size: size.toUpperCase(),
-            material: "",
+            material: scrapedData.material || "",
             item_url: productUrl,
             image_data: scrapedData.image_data
         });
